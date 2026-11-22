@@ -621,6 +621,8 @@ render();
   <div id="pinDots" style="display:flex; gap:12px; margin:8px 0;">
     <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div>
   </div>
   <div id="pinError" style="color:#e53935; font-size:0.85rem; min-height:1.2em;"></div>
   <div style="display:grid; grid-template-columns:repeat(3,70px); gap:12px;">
@@ -656,7 +658,7 @@ render();
 </style>
 <script>
 (function() {
-  const CORRECT_PIN = '0624';
+  const CORRECT_PIN = '12210501';
   const SESSION_KEY = 'library_unlocked';
   let entered = '';
 
@@ -681,10 +683,10 @@ render();
       updateDots();
       return;
     }
-    if (entered.length >= 4) return;
+    if (entered.length >= 8) return;
     entered += val;
     updateDots();
-    if (entered.length === 4) {
+    if (entered.length === 8) {
       if (entered === CORRECT_PIN) {
         try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
         document.getElementById('pinOverlay').style.display = 'none';
