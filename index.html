@@ -1,27 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>내 서재 | My Personal Library</title>
-
-<!-- Open Graph (카카오톡, 텔레그램, 슬랙 등 링크 미리보기) -->
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://aej100.github.io/my-library/"/>
-<meta property="og:title" content="내 서재 📚"/>
-<meta property="og:description" content="135권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
-<meta property="og:image" content="https://aej100.github.io/my-library/og-image.svg"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta property="og:locale" content="ko_KR"/>
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="내 서재 📚"/>
-<meta name="twitter:description" content="135권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
-<meta name="twitter:image" content="https://aej100.github.io/my-library/og-image.svg"/>
-
+<title>내 서재</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
@@ -215,6 +198,44 @@
     font-size: 11px;
   }
 
+  /* 책 목록 */
+  .book-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .book-item {
+    display: flex;
+    align-items: center;
+    padding: 11px 14px;
+    background: var(--surface);
+    border-radius: 8px;
+    gap: 10px;
+    transition: background 0.1s;
+  }
+  .book-item:hover, .book-item:active { background: var(--accent-bg); }
+  .book-item + .book-item { margin-top: 2px; }
+  .book-num {
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 20px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .book-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 0;
+  }
+  .book-folder {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
   /* 책 그리드 */
   .book-grid {
     display: grid;
@@ -275,9 +296,9 @@
     word-break: keep-all;
   }
   .card-title {
-    font-size: 11px;
-    line-height: 1.4;
-    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 700;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -291,14 +312,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  /* 검색 결과: 표지 + 하이라이트 타이틀 */
-  .search-book-card .card-title mark {
-    background: #ffe57a; color: #1a1814; border-radius: 2px; padding: 0 1px;
-  }
-  :root[data-theme="dark"] .search-book-card .card-title mark {
-    background: #8b6914; color: #f0ede6;
   }
 
   /* 하이라이트 */
@@ -326,13 +339,154 @@
   /* 플로팅 뱃지: 검색 중 카테고리 표시 */
   .search-mode .cat-count-wrap { display: none; }
 </style>
+<script>
+window.LOCAL_COVERS = {
+  "1% 카피라이터의 기록법": "covers/1% 카피라이터의 기록법.jpg",
+  "100억 투자 이야기": "covers/100억 투자 이야기.jpg",
+  "1페이지 마케팅 플랜": "covers/1페이지 마케팅 플랜.jpg",
+  "2024 문화 소비 트렌드": "covers/2024 문화 소비 트렌드.jpg",
+  "AGI, 천사인가 악마인가": "covers/AGI, 천사인가 악마인가.jpg",
+  "e13040000026": "covers/e13040000026.jpg",
+  "e13040200289": "covers/e13040200289.jpg",
+  "MBA 마케팅 필독서 45": "covers/MBA 마케팅 필독서 45.jpg",
+  "가치투자자의 탄생": "covers/가치투자자의 탄생.jpg",
+  "검색은 끝났다": "covers/검색은 끝났다.jpg",
+  "고객의 95%는 자기 의지로 물건을 사지 않는다": "covers/고객의 95%는 자기 의지로 물건을 사지 않는다.jpg",
+  "공간 인간": "covers/공간 인간.jpg",
+  "공간은 전략이다": "covers/공간은 전략이다.jpg",
+  "공시 6년 실패, 중소기업 김 대리는 어떻게 6년 만에 22억을 벌었나": "covers/공시 6년 실패, 중소기업 김 대리는 어떻게 6년 만에 22억을 벌었나.jpg",
+  "교양을 위한 최소한의 경제지식": "covers/교양을 위한 최소한의 경제지식.jpg",
+  "군중심리": "covers/군중심리.jpg",
+  "귀여움을 팔아라": "covers/귀여움을 팔아라.jpg",
+  "그래서 마케팅에도 심리학이 필요합니다": "covers/그래서 마케팅에도 심리학이 필요합니다.jpg",
+  "기본부터 배우는 인테리어 교과서": "covers/기본부터 배우는 인테리어 교과서.jpg",
+  "나는 ETF로 돈 되는 곳에 투자한다": "covers/나는 ETF로 돈 되는 곳에 투자한다.jpg",
+  "나는 죽을 때까지 재미있게 살고 싶다": "covers/나는 죽을 때까지 재미있게 살고 싶다.jpg",
+  "나다움으로 시작하는 퍼스널 브랜딩": "covers/나다움으로 시작하는 퍼스널 브랜딩.jpg",
+  "나를 담은 집 나를 닮은 인테리어": "covers/나를 담은 집 나를 닮은 인테리어.jpg",
+  "나를 지키는 다크 심리학": "covers/나를 지키는 다크 심리학.jpg",
+  "나의 완벽한 장례식": "covers/나의 완벽한 장례식.jpg",
+  "내 블로그가 고객을 데려왔다": "covers/내 블로그가 고객을 데려왔다.jpg",
+  "내면 근력": "covers/내면 근력.jpg",
+  "내면소통": "covers/내면소통.jpg",
+  "내추럴 빈티지 인테리어": "covers/내추럴 빈티지 인테리어.jpg",
+  "너, 내 소비자가 돼라": "covers/너, 내 소비자가 돼라.jpg",
+  "넛지  파이널 에디션": "covers/넛지  파이널 에디션.jpg",
+  "넛지 파이널 에디션": "covers/넛지 파이널 에디션.jpg",
+  "니체의 초월자": "covers/니체의 초월자.jpg",
+  "다가올 5년, 미래경제를 말한다": "covers/다가올 5년, 미래경제를 말한다.jpg",
+  "다크 지능": "covers/다크 지능.jpg",
+  "더 골1": "covers/더 골1.jpg",
+  "데일 카네기 성공대화론": "covers/데일 카네기 성공대화론.jpg",
+  "데일 카네기 인간관계론": "covers/데일 카네기 인간관계론.jpg",
+  "도쿄 브랜딩": "covers/도쿄 브랜딩.jpg",
+  "도파민의 함정": "covers/도파민의 함정.jpg",
+  "독서의 기술": "covers/독서의 기술.jpg",
+  "돈의 심리학": "covers/돈의 심리학.jpg",
+  "두려움 없는 삶에 대하여": "covers/두려움 없는 삶에 대하여.jpg",
+  "따라만해도 성공 보장 20가지 인테리어 법칙": "covers/따라만해도 성공 보장 20가지 인테리어 법칙.jpg",
+  "딱 1년만 미쳐라": "covers/딱 1년만 미쳐라.jpg",
+  "린 마케팅": "covers/린 마케팅.jpg",
+  "마음이 편안해지는 - 주방 욕실 인테리어": "covers/마음이 편안해지는 - 주방 욕실 인테리어.jpg",
+  "마케터의 문장": "covers/마케터의 문장.jpg",
+  "마케팅 불변의 법칙": "covers/마케팅 불변의 법칙.jpg",
+  "마케팅 설계자": "covers/마케팅 설계자.jpg",
+  "마케팅 천재들의 비밀노트 350": "covers/마케팅 천재들의 비밀노트 350.jpg",
+  "무조건 팔리는 브랜드 마케팅 기술 100": "covers/무조건 팔리는 브랜드 마케팅 기술 100.jpg",
+  "무조건 팔리는 스토리 마케팅 기술 100": "covers/무조건 팔리는 스토리 마케팅 기술 100.jpg",
+  "무조건 팔리는 심리 마케팅 기술 100": "covers/무조건 팔리는 심리 마케팅 기술 100.jpg",
+  "무조건 팔리는 온라인 마케팅 기술 100": "covers/무조건 팔리는 온라인 마케팅 기술 100.jpg",
+  "무조건 팔리는 카피 단어장 (개정증보판)": "covers/무조건 팔리는 카피 단어장 (개정증보판).jpg",
+  "무조건 팔리는 카피 단어장": "covers/무조건 팔리는 카피 단어장.jpg",
+  "무조건 팔리는 카피": "covers/무조건 팔리는 카피.jpg",
+  "물고기는 존재하지 않는다": "covers/물고기는 존재하지 않는다.jpg",
+  "미치도록 알고 싶은 아이디어 발상법": "covers/미치도록 알고 싶은 아이디어 발상법.jpg",
+  "바로 매출이 오르는 판매마케팅 법칙": "covers/바로 매출이 오르는 판매마케팅 법칙.jpg",
+  "반셀프 인테리어 교과서": "covers/반셀프 인테리어 교과서.jpg",
+  "배민다움": "covers/배민다움.jpg",
+  "백만장자 메신저": "covers/백만장자 메신저.jpg",
+  "부동산 트렌드 2027": "covers/부동산 트렌드 2027.jpg",
+  "부의 곡선": "covers/부의 곡선.jpg",
+  "부의 추월차선": "covers/부의 추월차선.jpg",
+  "브랜드 설계자": "covers/브랜드 설계자.jpg",
+  "비싸야 잘 팔리는 비상식적 마케팅": "covers/비싸야 잘 팔리는 비상식적 마케팅.jpg",
+  "비전공자 AI 외주 개발": "covers/비전공자 AI 외주 개발.jpg",
+  "빅터 프랭클의 죽음의 수용소에서": "covers/빅터 프랭클의 죽음의 수용소에서.jpg",
+  "빛을알면 조명 인테리어가 쉬워진다": "covers/빛을알면 조명 인테리어가 쉬워진다.jpg",
+  "사장학개론": "covers/사장학개론.jpg",
+  "상위 1%만 아는 스레드 폭발 성장의 공식": "covers/상위 1%만 아는 스레드 폭발 성장의 공식.jpg",
+  "생각 중독": "covers/생각 중독.jpg",
+  "설득의 심리학 1": "covers/설득의 심리학 1.jpg",
+  "설득자": "covers/설득자.jpg",
+  "세계 심리학 필독서 30": "covers/세계 심리학 필독서 30.jpg",
+  "숨은 Needs를 찾아내는 잠재 고객의 속마음 해킹 전략": "covers/숨은 Needs를 찾아내는 잠재 고객의 속마음 해킹 전략.jpg",
+  "스레드 성장 공식": "covers/스레드 성장 공식.jpg",
+  "스타트업 설계자": "covers/스타트업 설계자.jpg",
+  "스토너": "covers/스토너.jpg",
+  "스토리 설계자": "covers/스토리 설계자.jpg",
+  "스토리의 과학": "covers/스토리의 과학.jpg",
+  "스틱 [15주년 기념판]": "covers/스틱 [15주년 기념판].jpg",
+  "실무에서 바로 써먹는 경리·회계 업무지식": "covers/실무에서 바로 써먹는 경리·회계 업무지식.jpg",
+  "아주 작은 대화의 기술": "covers/아주 작은 대화의 기술.jpg",
+  "온라인 건물주의 정석 – 네이버 블로그 편": "covers/온라인 건물주의 정석 – 네이버 블로그 편.jpg",
+  "온라인 건물주의 정석": "covers/온라인 건물주의 정석.jpg",
+  "월급은 150만 원이지만 연봉은 블로그로 1억입니다": "covers/월급은 150만 원이지만 연봉은 블로그로 1억입니다.jpg",
+  "위대한 12주": "covers/위대한 12주.jpg",
+  "이기적 유전자(50주년 기념판)": "covers/이기적 유전자(50주년 기념판).jpg",
+  "이병철·정주영 사람을 보는 지혜": "covers/이병철·정주영 사람을 보는 지혜.jpg",
+  "이웃집 백만장자": "covers/이웃집 백만장자.jpg",
+  "인스타그램 심리학": "covers/인스타그램 심리학.jpg",
+  "인테리어 디자인과 스타일링의 기본": "covers/인테리어 디자인과 스타일링의 기본.jpg",
+  "일론 머스크": "covers/일론 머스크.jpg",
+  "일생에 단 한번은 독기를 품어라": "covers/일생에 단 한번은 독기를 품어라.jpg",
+  "자본주의 사용설명서": "covers/자본주의 사용설명서.jpg",
+  "잘 파는 사람들이 숨겨두고 읽는 바이블": "covers/잘 파는 사람들이 숨겨두고 읽는 바이블.jpg",
+  "잘 파는 사람은 심리를 알고 있다": "covers/잘 파는 사람은 심리를 알고 있다.jpg",
+  "저는 브랜딩을 하는 사람입니다": "covers/저는 브랜딩을 하는 사람입니다.jpg",
+  "제로클릭시대 GEO 대책": "covers/제로클릭시대 GEO 대책.jpg",
+  "주식투자의 9할은 심리 싸움이다": "covers/주식투자의 9할은 심리 싸움이다.jpg",
+  "지금 당장 팔리는 심리 마케팅 전략": "covers/지금 당장 팔리는 심리 마케팅 전략.jpg",
+  "지금 팔리는 것들의 비밀": "covers/지금 팔리는 것들의 비밀.jpg",
+  "지무비의 유튜브 엑시트": "covers/지무비의 유튜브 엑시트.jpg",
+  "찐 팬을 만드는 습관": "covers/찐 팬을 만드는 습관.jpg",
+  "찰리 멍거 바이블 완결판": "covers/찰리 멍거 바이블 완결판.jpg",
+  "창업가의 브랜딩": "covers/창업가의 브랜딩.jpg",
+  "처음 시작하는 인테리어": "covers/처음 시작하는 인테리어.jpg",
+  "처음 하는 브랜딩 공부": "covers/처음 하는 브랜딩 공부.jpg",
+  "최고의 인테리어는 정리입니다": "covers/최고의 인테리어는 정리입니다.jpg",
+  "카피라이터의 표현법": "covers/카피라이터의 표현법.jpg",
+  "컨셉 라이팅": "covers/컨셉 라이팅.jpg",
+  "코트라 월드 트렌드 2027": "covers/코트라 월드 트렌드 2027.jpg",
+  "콘텐츠 설계자": "covers/콘텐츠 설계자.jpg",
+  "크러쉬 잇! SNS로 열정을 돈으로 바꿔라": "covers/크러쉬 잇! SNS로 열정을 돈으로 바꿔라.jpg",
+  "투자 불패의 법칙": "covers/투자 불패의 법칙.jpg",
+  "트래픽 설계자": "covers/트래픽 설계자.jpg",
+  "판매의 법칙": "covers/판매의 법칙.jpg",
+  "팬을 만드는 마케팅": "covers/팬을 만드는 마케팅.jpg",
+  "퍼스널 브랜딩": "covers/퍼스널 브랜딩.jpg",
+  "플레이스 설계자": "covers/플레이스 설계자.jpg",
+  "피터케이의 이기는 투자 불변의 법칙": "covers/피터케이의 이기는 투자 불변의 법칙.jpg",
+  "필립 코틀러 마케팅 트랜스포메이션": "covers/필립 코틀러 마케팅 트랜스포메이션.jpg",
+  "필립 코틀러의 마케팅 수업": "covers/필립 코틀러의 마케팅 수업.jpg",
+  "하루 10분 마케팅 습관": "covers/하루 10분 마케팅 습관.jpg",
+  "하루 10분 브랜딩 습관": "covers/하루 10분 브랜딩 습관.jpg",
+  "하이엔드 아비투스   그들은 정보가 아니라 아비투스를 교환한다.": "covers/하이엔드 아비투스   그들은 정보가 아니라 아비투스를 교환한다..jpg",
+  "하이엔드 아비투스": "covers/하이엔드 아비투스.jpg",
+  "한 달 만에 달성하는 100만 팔로워 마케팅": "covers/한 달 만에 달성하는 100만 팔로워 마케팅.jpg",
+  "행복의 기원": "covers/행복의 기원.jpg",
+  "홍보의 신": "covers/홍보의 신.jpg",
+  "회복탄력성": "covers/회복탄력성.jpg",
+  "회사 밖에서 몰래 월급 버는 김대리 이야기": "covers/회사 밖에서 몰래 월급 버는 김대리 이야기.jpg"
+};
+</script>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
     <h1>📚 내 서재</h1>
-    <span class="book-count" id="totalCount">135권</span>
+    <span class="book-count" id="totalCount">132권</span>
+    <button onclick="clearCoverCache()" title="표지 캐시 초기화" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;color:var(--muted);border-radius:6px;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔄</button>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -466,7 +620,35 @@ const BOOKS = [
   {title:'피터케이의 이기는 투자 불변의 법칙',folder:'투자_재테크'},
   {title:'반셀프 인테리어 교과서',folder:'인테리어_공간'},
   {title:'한 달 만에 달성하는 100만 팔로워 마케팅',folder:'마케팅'},
-  {title:'2024 문화 소비 트렌드',folder:'마케팅'}
+  {title:'2024 문화 소비 트렌드',folder:'마케팅'},
+  {title:'월급은 150만 원이지만 연봉은 블로그로 1억입니다',folder:'마케팅'},
+  {title:'지금 팔리는 것들의 비밀',folder:'마케팅'},
+  {title:'크러쉬 잇! SNS로 열정을 돈으로 바꿔라',folder:'마케팅'},
+  {title:'인스타그램 심리학',folder:'마케팅'},
+  {title:'1페이지 마케팅 플랜',folder:'마케팅'},
+  {title:'스토리의 과학',folder:'마케팅'},
+  {title:'스토너',folder:'미분류'},
+  {title:'교양을 위한 최소한의 경제지식',folder:'미분류'},
+  {title:'배민다움',folder:'미분류'},
+  {title:'데일 카네기 인간관계론',folder:'미분류'},
+  {title:'행복의 기원',folder:'심리_행동경제학'},
+  {title:'내면소통',folder:'심리_행동경제학'},
+  {title:'아주 작은 대화의 기술',folder:'영업_세일즈'},
+  {title:'기본부터 배우는 인테리어 교과서',folder:'인테리어_공간'},
+  {title:'처음 시작하는 인테리어',folder:'인테리어_공간'},
+  {title:'빛을알면 조명 인테리어가 쉬워진다',folder:'인테리어_공간'},
+  {title:'인테리어 디자인과 스타일링의 기본',folder:'인테리어_공간'},
+  {title:'마음이 편안해지는 - 주방 욕실 인테리어',folder:'인테리어_공간'},
+  {title:'최고의 인테리어는 정리입니다',folder:'인테리어_공간'},
+  {title:'나를 담은 집 나를 닮은 인테리어',folder:'인테리어_공간'},
+  {title:'따라만해도 성공 보장 20가지 인테리어 법칙',folder:'인테리어_공간'},
+  {title:'내추럴 빈티지 인테리어',folder:'인테리어_공간'},
+  {title:'빅터 프랭클의 죽음의 수용소에서',folder:'자기계발'},
+  {title:'나는 죽을 때까지 재미있게 살고 싶다',folder:'자기계발'},
+  {title:'찐 팬을 만드는 습관',folder:'창업_비즈니스'},
+  {title:'일론 머스크',folder:'창업_비즈니스'},
+  {title:'부의 곡선',folder:'투자_재테크'},
+  {title:'가치투자자의 탄생',folder:'투자_재테크'},
 ];
 
 const FOLDER_DISPLAY = {
@@ -520,6 +702,10 @@ function getColors(cls) {
 }
 
 // ── 책 표지 로딩 ──────────────────────────────────────────
+// 네이버 책 검색 API 키: https://developers.naver.com/apps 에서 무료 발급
+// (애플리케이션 등록 → 검색 API 체크 → Client ID 복사)
+const NAVER_CLIENT_ID = '';  // ← 여기에 네이버 Client ID 입력
+
 const COVER_TTL = 30 * 24 * 3600 * 1000; // 30일
 
 function getCoverCache(title) {
@@ -529,33 +715,129 @@ function getCoverCache(title) {
     const item = JSON.parse(raw);
     if (Date.now() - item.ts > COVER_TTL) { localStorage.removeItem('gc_' + title); return null; }
     return item.url; // null = "not found", string = URL
-  } catch { return null; }
+  } catch(e) { return null; }
 }
 
 function setCoverCache(title, url) {
-  try { localStorage.setItem('gc_' + title, JSON.stringify({url, ts: Date.now()})); } catch {}
+  try { localStorage.setItem('gc_' + title, JSON.stringify({url, ts: Date.now()})); } catch(e) {}
 }
+
+function clearCoverCache() {
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('gc_'));
+  keys.forEach(k => localStorage.removeItem(k));
+  alert(`표지 캐시 ${keys.length}개 초기화 완료. 페이지를 새로고침하세요.`);
+}
+
+// null(못찾음)으로 저장된 캐시 자동 초기화 (API 쿼터 초과 등으로 잘못 저장된 경우)
+(function clearNullCache() {
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('gc_')).forEach(k => {
+      const item = JSON.parse(localStorage.getItem(k) || '{}');
+      if (item.url === null) localStorage.removeItem(k);
+    });
+  } catch(e) {}
+})();
 
 async function fetchCoverUrl(title) {
   const q = encodeURIComponent(title);
-  const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${q}&maxResults=3&fields=items/volumeInfo/imageLinks`;
+
+  // 1순위: 네이버 책 검색 (한국 책 커버 최고)
+  if (NAVER_CLIENT_ID) {
+    try {
+      const r = await fetch(`https://openapi.naver.com/v1/search/book.json?query=${q}&display=3`, {
+        headers: { 'X-Naver-Client-Id': NAVER_CLIENT_ID, 'X-Naver-Client-Secret': '' }
+      });
+      if (r.ok) {
+        const data = await r.json();
+        if (data.items?.length) {
+          for (const item of data.items) {
+            const src = item.image?.replace('http://', 'https://');
+            if (src) return src;
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  // 2순위: Google Books API (한국어 책 우선)
   try {
-    const r = await fetch(url);
-    if (!r.ok) return null;
-    const data = await r.json();
-    if (!data.items) return null;
-    for (const item of data.items) {
-      const links = item.volumeInfo?.imageLinks;
-      if (links) {
-        const src = (links.medium || links.small || links.thumbnail || '').replace('http://', 'https://').replace('zoom=1', 'zoom=2');
-        if (src) return src;
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${q}&langRestrict=ko&maxResults=3&fields=items/volumeInfo/imageLinks`);
+    if (r.ok) {
+      const data = await r.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const links = item.volumeInfo?.imageLinks;
+          if (links) {
+            const src = (links.medium || links.small || links.thumbnail || '').replace('http://', 'https://').replace('zoom=1', 'zoom=2');
+            if (src) return src;
+          }
+        }
       }
     }
-  } catch {}
+  } catch(e) {}
+
+  // 3순위: Google Books API (언어 제한 없이)
+  try {
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${q}&maxResults=3&fields=items/volumeInfo/imageLinks`);
+    if (r.ok) {
+      const data = await r.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const links = item.volumeInfo?.imageLinks;
+          if (links) {
+            const src = (links.medium || links.small || links.thumbnail || '').replace('http://', 'https://').replace('zoom=1', 'zoom=2');
+            if (src) return src;
+          }
+        }
+      }
+    }
+  } catch(e) {}
+
   return null;
 }
 
 let coverObserver = null;
+
+function setImgSrc(img, src) {
+  img.src = src;
+  img.onload = () => img.classList.add('loaded');
+}
+
+// API 요청 throttle (동시 2개, 300ms 간격)
+const apiQueue = [];
+let apiRunning = 0;
+const API_CONCURRENCY = 2;
+const API_DELAY = 300;
+
+function runApiQueue() {
+  if (apiRunning >= API_CONCURRENCY || !apiQueue.length) return;
+  apiRunning++;
+  const { title, img } = apiQueue.shift();
+  const cached = getCoverCache(title);
+  if (cached === null) {
+    fetchCoverUrl(title).then(url => {
+      setCoverCache(title, url);
+      if (url) setImgSrc(img, url);
+    }).finally(() => {
+      apiRunning--;
+      setTimeout(runApiQueue, API_DELAY);
+    });
+  } else {
+    if (cached) setImgSrc(img, cached);
+    apiRunning--;
+    setTimeout(runApiQueue, 50);
+  }
+}
+
+function loadCoverFromApi(title, img) {
+  const cached = getCoverCache(title);
+  if (cached !== null) {
+    if (cached) setImgSrc(img, cached);
+    return;
+  }
+  apiQueue.push({ title, img });
+  runApiQueue();
+}
 
 function initCoverObserver() {
   if (coverObserver) coverObserver.disconnect();
@@ -569,18 +851,14 @@ function initCoverObserver() {
       if (!img || img.dataset.loaded) return;
       img.dataset.loaded = '1';
 
-      const cached = getCoverCache(title);
-      if (cached === null) {
-        // 캐시 없음 → API 호출
-        fetchCoverUrl(title).then(url => {
-          setCoverCache(title, url);
-          if (url) { img.src = url; img.onload = () => img.classList.add('loaded'); }
-        });
-      } else if (cached) {
-        img.src = cached;
-        img.onload = () => img.classList.add('loaded');
+      // 1순위: 로컬 커버 (covers/covers.js 에 있는 경우)
+      const localSrc = window.LOCAL_COVERS && window.LOCAL_COVERS[title];
+      if (localSrc) {
+        setImgSrc(img, localSrc);
+      } else {
+        // 2순위: API
+        loadCoverFromApi(title, img);
       }
-      // cached === null (저장된 "없음") 이면 fallback 유지
     });
   }, { rootMargin: '300px' });
 
@@ -591,9 +869,14 @@ function bookCardHtml(b, titleHtml, showFolder) {
   const info = getFolderInfo(b.folder);
   const [bg, fg] = getColors(info.cls);
   const folderBadge = showFolder ? `<div class="card-folder-badge">${info.emoji} ${info.label}</div>` : '';
+  // 로컬 커버가 있으면 바로 img src 삽입 (IntersectionObserver 불필요)
+  const localSrc = window.LOCAL_COVERS && window.LOCAL_COVERS[b.title];
+  const imgTag = localSrc
+    ? `<img class="cover-img loaded" src="${localSrc}" alt="${escape(b.title)}">`
+    : `<img class="cover-img" alt="${escape(b.title)}">`;
   return `<div class="book-card${showFolder ? ' search-book-card' : ''}">
     <div class="cover-wrap" data-title="${escape(b.title)}">
-      <img class="cover-img" alt="${escape(b.title)}">
+      ${imgTag}
       <div class="cover-fallback" style="background:${bg}">
         <span class="cover-fallback-emoji">${info.emoji}</span>
         <span class="cover-fallback-title" style="color:${fg}">${escape(b.title)}</span>
@@ -603,6 +886,7 @@ function bookCardHtml(b, titleHtml, showFolder) {
     ${folderBadge}
   </div>`;
 }
+
 
 function render() {
   const q = searchQuery.trim().toLowerCase();
@@ -632,7 +916,6 @@ function render() {
     resultInfo.innerHTML = '';
   }
 
-  // 검색 모드: 표지 그리드 (카테고리 배지 포함)
   if (q) {
     const cards = filtered.map(b => bookCardHtml(b, highlight(b.title, q), true)).join('');
     container.innerHTML = `<div class="book-grid">${cards}</div>`;
@@ -640,7 +923,6 @@ function render() {
     return;
   }
 
-  // 카테고리 뷰: 섹션별 그리드
   const byFolder = {};
   BOOKS.forEach(b => {
     if (!byFolder[b.folder]) byFolder[b.folder] = [];
@@ -653,38 +935,7 @@ function render() {
 
   let html = '';
   folders.forEach(folder => {
-    const books = byFolder[folder] || [  {title:'월급은 150만 원이지만 연봉은 블로그로 1억입니다',folder:'마케팅'},
-  {title:'지금 팔리는 것들의 비밀',folder:'마케팅'},
-  {title:'크러쉬 잇! SNS로 열정을 돈으로 바꿔라',folder:'마케팅'},
-  {title:'인스타그램 심리학',folder:'마케팅'},
-  {title:'1페이지 마케팅 플랜',folder:'마케팅'},
-  {title:'스토리의 과학',folder:'마케팅'},
-  {title:'스토너',folder:'미분류'},
-  {title:'교양을 위한 최소한의 경제지식',folder:'미분류'},
-  {title:'배민다움',folder:'미분류'},
-  {title:'데일 카네기 인간관계론',folder:'미분류'},
-  {title:'행복의 기원',folder:'심리_행동경제학'},
-  {title:'내면소통',folder:'심리_행동경제학'},
-  {title:'아주 작은 대화의 기술',folder:'영업_세일즈'},
-  {title:'기본부터 배우는 인테리어 교과서',folder:'인테리어_공간'},
-  {title:'처음 시작하는 인테리어',folder:'인테리어_공간'},
-  {title:'빛을알면 조명 인테리어가 쉬워진다',folder:'인테리어_공간'},
-  {title:'인테리어 디자인과 스타일링의 기본',folder:'인테리어_공간'},
-  {title:'마음이 편안해지는 - 주방 욕실 인테리어',folder:'인테리어_공간'},
-  {title:'최고의 인테리어는 정리입니다',folder:'인테리어_공간'},
-  {title:'나를 담은 집 나를 닮은 인테리어',folder:'인테리어_공간'},
-  {title:'따라만해도 성공 보장 20가지 인테리어 법칙',folder:'인테리어_공간'},
-  {title:'내추럴 빈티지 인테리어',folder:'인테리어_공간'},
-  {title:'빅터 프랭클의 죽음의 수용소에서',folder:'자기계발'},
-  {title:'나는 죽을 때까지 재미있게 살고 싶다',folder:'자기계발'},
-  {title:'찐 팬을 만드는 습관',folder:'창업_비즈니스'},
-  {title:'일론 머스크',folder:'창업_비즈니스'},
-  {title:'부의 곡선',folder:'투자_재테크'},
-  {title:'가치투자자의 탄생',folder:'투자_재테크'},
-  {title:'e13040000026',folder:'미분류'},
-  {title:'스틱 [15주년 기념판]',folder:'미분류'},
-  {title:'한 달 만에 달성하는 100만 팔로워 마케팅',folder:'미분류'},
-];
+    const books = byFolder[folder] || [];
     if (!books.length) return;
     const info = getFolderInfo(folder);
     const [bg, fg] = getColors(info.cls);
@@ -725,15 +976,13 @@ render();
 <!-- PIN 잠금 -->
 <div id="pinOverlay" style="
   display:none; position:fixed; inset:0; z-index:9999;
-  background:var(--bg); display:flex; align-items:center; justify-content:center;
+  background:var(--bg); align-items:center; justify-content:center;
   flex-direction:column; gap:20px;
 ">
   <div style="font-size:2rem;">📚</div>
   <div style="font-size:1.3rem; font-weight:700; color:var(--fg);">내 서재</div>
   <div style="color:var(--muted); font-size:0.9rem;">PIN 번호를 입력하세요</div>
   <div id="pinDots" style="display:flex; gap:12px; margin:8px 0;">
-    <div class="dot"></div><div class="dot"></div>
-    <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div><div class="dot"></div>
   </div>
@@ -771,16 +1020,15 @@ render();
 </style>
 <script>
 (function() {
-  const CORRECT_PIN = '12210501';
+  // ✏️ PIN 변경은 여기 한 곳만 수정하세요
+  const CORRECT_PIN = '12210501'; // ← 8자리 숫자로 바꾸세요
+  const PIN_LENGTH = CORRECT_PIN.length;
+
   const SESSION_KEY = 'library_unlocked';
   let entered = '';
 
   function checkUnlock() {
-    try {
-      if (sessionStorage.getItem(SESSION_KEY) === '1') return; // 이미 인증됨
-    } catch(e) {}
-    document.getElementById('pinOverlay').style.display = 'flex';
-    document.querySelector('.container') && (document.querySelector('.container').style.visibility = 'hidden');
+    return; // PIN 비활성화
   }
 
   function updateDots() {
@@ -796,14 +1044,13 @@ render();
       updateDots();
       return;
     }
-    if (entered.length >= 8) return;
+    if (entered.length >= PIN_LENGTH) return;
     entered += val;
     updateDots();
-    if (entered.length === 8) {
+    if (entered.length === PIN_LENGTH) {
       if (entered === CORRECT_PIN) {
         try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
         document.getElementById('pinOverlay').style.display = 'none';
-        document.querySelector('.container') && (document.querySelector('.container').style.visibility = '');
       } else {
         document.getElementById('pinError').textContent = '❌ 잘못된 PIN입니다';
         entered = '';

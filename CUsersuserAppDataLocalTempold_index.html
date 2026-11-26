@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>내 서재</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: #e5e2db;
+    --fg: #1a1814;
+    --muted: #7a766e;
+    --accent: #c8773a;
+    --accent-bg: #fdf3ea;
+    --folder-마케팅: #e8f4fd; --folder-마케팅-fg: #1565c0;
+    --folder-브랜딩: #fce4ec; --folder-브랜딩-fg: #880e4f;
+    --folder-카피라이팅: #f3e5f5; --folder-카피라이팅-fg: #6a1b9a;
+    --folder-심리: #e8f5e9; --folder-심리-fg: #1b5e20;
+    --folder-영업: #fff3e0; --folder-영업-fg: #bf360c;
+    --folder-인테리어: #e0f2f1; --folder-인테리어-fg: #004d40;
+    --folder-투자: #fff8e1; --folder-투자-fg: #f57f17;
+    --folder-창업: #ede7f6; --folder-창업-fg: #311b92;
+    --folder-자기계발: #fbe9e7; --folder-자기계발-fg: #bf360c;
+    --folder-콘텐츠: #e1f5fe; --folder-콘텐츠-fg: #01579b;
+    --folder-미분류: #f5f5f5; --folder-미분류-fg: #424242;
+    --radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #18160f; --surface: #242017; --border: #38342a;
+      --fg: #f0ede6; --muted: #958e82; --accent: #e8924e;
+      --accent-bg: #2d1e0e; --shadow: 0 2px 8px rgba(0,0,0,0.3);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #18160f; --surface: #242017; --border: #38342a;
+    --fg: #f0ede6; --muted: #958e82; --accent: #e8924e;
+    --accent-bg: #2d1e0e; --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Noto Sans KR', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100dvh;
+  }
+
+  /* 헤더 */
+  .header {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    background: var(--surface);
+    z-index: 101;
+  }
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .header-top h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--fg);
+  }
+  .book-count {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* 검색 */
+  .search-wrap {
+    position: relative;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    padding: 10px 12px 10px 38px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--muted); }
+
+  /* 필터 탭 */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 10px max(16px, env(safe-area-inset-left, 0px)) 0;
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* 메인 */
+  .main {
+    padding: 16px max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  }
+
+  /* 검색 결과 카운트 */
+  .result-info {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    min-height: 20px;
+  }
+  .result-info strong { color: var(--accent); }
+
+  /* 카테고리 섹션 */
+  .category-section {
+    margin-bottom: 20px;
+  }
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .cat-count {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .cat-toggle {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  /* 책 목록 */
+  .book-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .book-item {
+    display: flex;
+    align-items: center;
+    padding: 11px 14px;
+    background: var(--surface);
+    border-radius: 8px;
+    gap: 10px;
+    transition: background 0.1s;
+  }
+  .book-item:hover, .book-item:active { background: var(--accent-bg); }
+  .book-item + .book-item { margin-top: 2px; }
+  .book-num {
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 20px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .book-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 0;
+  }
+  .book-folder {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* 하이라이트 */
+  mark {
+    background: #ffe57a;
+    color: #1a1814;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  :root[data-theme="dark"] mark,
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) mark {
+    background: #8b6914;
+    color: #f0ede6;
+  }}
+
+  /* 빈 상태 */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+
+  /* 플로팅 뱃지: 검색 중 카테고리 표시 */
+  .search-mode .cat-count-wrap { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>📚 내 서재</h1>
+    <span class="book-count" id="totalCount">91권</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input id="search" type="search" placeholder="책 제목 검색..." autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+</div>
+
+<div class="filter-tabs" id="filterTabs">
+  <button class="tab active" data-cat="all">전체</button>
+  <button class="tab" data-cat="마케팅">마케팅</button>
+  <button class="tab" data-cat="브랜딩">브랜딩</button>
+  <button class="tab" data-cat="카피라이팅">카피라이팅</button>
+  <button class="tab" data-cat="심리_행동경제학">심리</button>
+  <button class="tab" data-cat="영업_세일즈">영업</button>
+  <button class="tab" data-cat="인테리어_공간">인테리어</button>
+  <button class="tab" data-cat="투자_재테크">투자</button>
+  <button class="tab" data-cat="창업_비즈니스">창업</button>
+  <button class="tab" data-cat="자기계발">자기계발</button>
+  <button class="tab" data-cat="콘텐츠_설계자">콘텐츠</button>
+</div>
+
+<div class="main">
+  <div class="result-info" id="resultInfo"></div>
+  <div id="bookContainer"></div>
+</div>
+
+<script>
+const BOOKS = [
+  {title:'MBA 마케팅 필독서 45',folder:'마케팅'},
+  {title:'검색은 끝났다',folder:'마케팅'},
+  {title:'고객의 95%는 자기 의지로 물건을 사지 않는다',folder:'마케팅'},
+  {title:'귀여움을 팔아라',folder:'마케팅'},
+  {title:'그래서 마케팅에도 심리학이 필요합니다',folder:'마케팅'},
+  {title:'내 블로그가 고객을 데려왔다',folder:'마케팅'},
+  {title:'너, 내 소비자가 돼라',folder:'마케팅'},
+  {title:'린 마케팅',folder:'마케팅'},
+  {title:'마케터의 문장',folder:'마케팅'},
+  {title:'마케팅 불변의 법칙',folder:'마케팅'},
+  {title:'마케팅 설계자',folder:'마케팅'},
+  {title:'마케팅 천재들의 비밀노트 350',folder:'마케팅'},
+  {title:'무조건 팔리는 브랜드 마케팅 기술 100',folder:'마케팅'},
+  {title:'무조건 팔리는 스토리 마케팅 기술 100',folder:'마케팅'},
+  {title:'무조건 팔리는 심리 마케팅 기술 100',folder:'마케팅'},
+  {title:'무조건 팔리는 온라인 마케팅 기술 100',folder:'마케팅'},
+  {title:'미치도록 알고 싶은 아이디어 발상법',folder:'마케팅'},
+  {title:'바로 매출이 오르는 판매마케팅 법칙',folder:'마케팅'},
+  {title:'브랜드 설계자',folder:'마케팅'},
+  {title:'비싸야 잘 팔리는 비상식적 마케팅',folder:'마케팅'},
+  {title:'스타트업 설계자',folder:'마케팅'},
+  {title:'스토리 설계자',folder:'마케팅'},
+  {title:'스틱 [15주년 기념판]',folder:'마케팅'},
+  {title:'잘 파는 사람은 심리를 알고 있다',folder:'마케팅'},
+  {title:'지금 당장 팔리는 심리 마케팅 전략',folder:'마케팅'},
+  {title:'코트라 월드 트렌드 2027',folder:'마케팅'},
+  {title:'트래픽 설계자',folder:'마케팅'},
+  {title:'판매의 법칙',folder:'마케팅'},
+  {title:'팬을 만드는 마케팅',folder:'마케팅'},
+  {title:'플레이스 설계자',folder:'마케팅'},
+  {title:'필립 코틀러 마케팅 트랜스포메이션',folder:'마케팅'},
+  {title:'하루 10분 마케팅 습관',folder:'마케팅'},
+  {title:'홍보의 신',folder:'마케팅'},
+  {title:'상위 1%만 아는 스레드 폭발 성장의 공식',folder:'미분류'},
+  {title:'하이엔드 아비투스   그들은 정보가 아니라 아비투스를 교환한다.',folder:'미분류'},
+  {title:'나다움으로 시작하는 퍼스널 브랜딩',folder:'브랜딩'},
+  {title:'도쿄 브랜딩',folder:'브랜딩'},
+  {title:'브랜드 설계자',folder:'브랜딩'},
+  {title:'저는 브랜딩을 하는 사람입니다',folder:'브랜딩'},
+  {title:'창업가의 브랜딩',folder:'브랜딩'},
+  {title:'처음 하는 브랜딩 공부',folder:'브랜딩'},
+  {title:'퍼스널 브랜딩',folder:'브랜딩'},
+  {title:'하루 10분 브랜딩 습관',folder:'브랜딩'},
+  {title:'군중심리',folder:'심리_행동경제학'},
+  {title:'나를 지키는 다크 심리학',folder:'심리_행동경제학'},
+  {title:'넛지  파이널 에디션',folder:'심리_행동경제학'},
+  {title:'다크 지능',folder:'심리_행동경제학'},
+  {title:'도파민의 함정',folder:'심리_행동경제학'},
+  {title:'물고기는 존재하지 않는다',folder:'심리_행동경제학'},
+  {title:'세계 심리학 필독서 30',folder:'심리_행동경제학'},
+  {title:'이기적 유전자(50주년 기념판)',folder:'심리_행동경제학'},
+  {title:'백만장자 메신저',folder:'영업_세일즈'},
+  {title:'설득의 심리학 1',folder:'영업_세일즈'},
+  {title:'설득자',folder:'영업_세일즈'},
+  {title:'잘 파는 사람은 심리를 알고 있다',folder:'영업_세일즈'},
+  {title:'판매의 법칙',folder:'영업_세일즈'},
+  {title:'공간 인간',folder:'인테리어_공간'},
+  {title:'공간은 전략이다',folder:'인테리어_공간'},
+  {title:'플레이스 설계자',folder:'인테리어_공간'},
+  {title:'하이엔드 아비투스   그들은 정보가 아니라 아비투스를 교환한다.',folder:'인테리어_공간'},
+  {title:'AGI, 천사인가 악마인가',folder:'자기계발'},
+  {title:'나의 완벽한 장례식',folder:'자기계발'},
+  {title:'내면 근력',folder:'자기계발'},
+  {title:'니체의 초월자',folder:'자기계발'},
+  {title:'데일 카네기 성공대화론',folder:'자기계발'},
+  {title:'독서의 기술',folder:'자기계발'},
+  {title:'두려움 없는 삶에 대하여',folder:'자기계발'},
+  {title:'딱 1년만 미쳐라',folder:'자기계발'},
+  {title:'위대한 12주',folder:'자기계발'},
+  {title:'이병철·정주영 사람을 보는 지혜',folder:'자기계발'},
+  {title:'일생에 단 한번은 독기를 품어라',folder:'자기계발'},
+  {title:'회복탄력성',folder:'자기계발'},
+  {title:'AGI, 천사인가 악마인가',folder:'창업_비즈니스'},
+  {title:'나의 완벽한 장례식',folder:'창업_비즈니스'},
+  {title:'내 블로그가 고객을 데려왔다',folder:'창업_비즈니스'},
+  {title:'넛지  파이널 에디션',folder:'창업_비즈니스'},
+  {title:'더 골1',folder:'창업_비즈니스'},
+  {title:'사장학개론',folder:'창업_비즈니스'},
+  {title:'상위 1%만 아는 스레드 폭발 성장의 공식',folder:'창업_비즈니스'},
+  {title:'스타트업 설계자',folder:'창업_비즈니스'},
+  {title:'실무에서 바로 써먹는 경리·회계 업무지식',folder:'창업_비즈니스'},
+  {title:'온라인 건물주의 정석',folder:'창업_비즈니스'},
+  {title:'이병철·정주영 사람을 보는 지혜',folder:'창업_비즈니스'},
+  {title:'자본주의 사용설명서',folder:'창업_비즈니스'},
+  {title:'코트라 월드 트렌드 2027',folder:'창업_비즈니스'},
+  {title:'홍보의 신',folder:'창업_비즈니스'},
+  {title:'회사 밖에서 몰래 월급 버는 김대리 이야기',folder:'창업_비즈니스'},
+  {title:'1% 카피라이터의 기록법',folder:'카피라이팅'},
+  {title:'무조건 팔리는 카피 단어장 (개정증보판)',folder:'카피라이팅'},
+  {title:'무조건 팔리는 카피 단어장',folder:'카피라이팅'},
+  {title:'무조건 팔리는 카피',folder:'카피라이팅'},
+  {title:'카피라이터의 표현법',folder:'카피라이팅'},
+  {title:'컨셉 라이팅',folder:'카피라이팅'},
+  {title:'스토리 설계자',folder:'콘텐츠_설계자'},
+  {title:'지무비의 유튜브 엑시트',folder:'콘텐츠_설계자'},
+  {title:'콘텐츠 설계자',folder:'콘텐츠_설계자'},
+  {title:'트래픽 설계자',folder:'콘텐츠_설계자'},
+  {title:'100억 투자 이야기',folder:'투자_재테크'},
+  {title:'공시 6년 실패, 중소기업 김 대리는 어떻게 6년 만에 22억을 벌었나',folder:'투자_재테크'},
+  {title:'나는 ETF로 돈 되는 곳에 투자한다',folder:'투자_재테크'},
+  {title:'돈의 심리학',folder:'투자_재테크'},
+  {title:'부동산 트렌드 2027',folder:'투자_재테크'},
+  {title:'부의 추월차선',folder:'투자_재테크'},
+  {title:'이웃집 백만장자',folder:'투자_재테크'},
+  {title:'자본주의 사용설명서',folder:'투자_재테크'},
+  {title:'주식투자의 9할은 심리 싸움이다',folder:'투자_재테크'},
+  {title:'찰리 멍거 바이블 완결판',folder:'투자_재테크'},
+  {title:'투자 불패의 법칙',folder:'투자_재테크'},
+  {title:'피터케이의 이기는 투자 불변의 법칙',folder:'투자_재테크'}
+];
+
+const FOLDER_DISPLAY = {
+  "마케팅": {label:"마케팅", emoji:"📣", cls:"마케팅"},
+  "브랜딩": {label:"브랜딩", emoji:"🎨", cls:"브랜딩"},
+  "카피라이팅": {label:"카피라이팅", emoji:"✍️", cls:"카피라이팅"},
+  "심리_행동경제학": {label:"심리·행동경제학", emoji:"🧠", cls:"심리"},
+  "영업_세일즈": {label:"영업·세일즈", emoji:"🤝", cls:"영업"},
+  "인테리어_공간": {label:"인테리어·공간", emoji:"🏠", cls:"인테리어"},
+  "투자_재테크": {label:"투자·재테크", emoji:"💰", cls:"투자"},
+  "창업_비즈니스": {label:"창업·비즈니스", emoji:"🚀", cls:"창업"},
+  "자기계발": {label:"자기계발", emoji:"💡", cls:"자기계발"},
+  "콘텐츠_설계자": {label:"콘텐츠·설계자", emoji:"📱", cls:"콘텐츠"},
+  "미분류": {label:"미분류", emoji:"📂", cls:"미분류"},
+};
+
+const FOLDER_COLORS = {
+  마케팅: ["#e8f4fd","#1565c0"], 브랜딩: ["#fce4ec","#880e4f"],
+  카피라이팅: ["#f3e5f5","#6a1b9a"], 심리: ["#e8f5e9","#1b5e20"],
+  영업: ["#fff3e0","#bf360c"], 인테리어: ["#e0f2f1","#004d40"],
+  투자: ["#fff8e1","#f57f17"], 창업: ["#ede7f6","#311b92"],
+  자기계발: ["#fbe9e7","#c62828"], 콘텐츠: ["#e1f5fe","#01579b"],
+  미분류: ["#f5f5f5","#424242"],
+};
+
+const FOLDER_ORDER = ["마케팅","브랜딩","카피라이팅","심리_행동경제학","영업_세일즈","인테리어_공간","투자_재테크","창업_비즈니스","자기계발","콘텐츠_설계자"];
+
+let activeFilter = "all";
+let searchQuery = "";
+
+function escape(str) {
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function highlight(text, query) {
+  if (!query) return escape(text);
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx < 0) return escape(text);
+  return escape(text.slice(0, idx)) + '<mark>' + escape(text.slice(idx, idx + query.length)) + '</mark>' + escape(text.slice(idx + query.length));
+}
+
+function getFolderInfo(folder) {
+  return FOLDER_DISPLAY[folder] || {label: folder, emoji: "📂", cls: "미분류"};
+}
+
+function getColors(cls) {
+  const isDark = document.documentElement.dataset.theme === 'dark' ||
+    (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (isDark) return ["#2a2520","#c8b89a"];
+  return FOLDER_COLORS[cls] || FOLDER_COLORS["미분류"];
+}
+
+function render() {
+  const q = searchQuery.trim().toLowerCase();
+  const container = document.getElementById('bookContainer');
+  const resultInfo = document.getElementById('resultInfo');
+
+  // 필터링
+  const filtered = BOOKS.filter(b => {
+    const matchFolder = activeFilter === 'all' || b.folder === activeFilter;
+    const matchSearch = !q || b.title.toLowerCase().includes(q);
+    return matchFolder && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">"${escape(q)}" 검색 결과가 없습니다</div></div>`;
+    resultInfo.innerHTML = '';
+    document.getElementById('totalCount').textContent = `91권`;
+    return;
+  }
+
+  document.getElementById('totalCount').textContent = `${BOOKS.length}권`;
+
+  if (q) {
+    resultInfo.innerHTML = `<strong>${filtered.length}권</strong> 검색됨`;
+  } else if (activeFilter !== 'all') {
+    const info = getFolderInfo(activeFilter);
+    resultInfo.innerHTML = `${info.emoji} <strong>${info.label}</strong> · ${filtered.length}권`;
+  } else {
+    resultInfo.innerHTML = '';
+  }
+
+  // 검색 모드: flat list
+  if (q) {
+    let html = '';
+    filtered.forEach((b, i) => {
+      const info = getFolderInfo(b.folder);
+      html += `<div class="book-item">
+        <span class="book-num">${i+1}</span>
+        <span class="book-title">${highlight(b.title, q)}</span>
+        <span class="book-folder">${info.emoji} ${info.label}</span>
+      </div>`;
+    });
+    container.innerHTML = html;
+    return;
+  }
+
+  // 카테고리 뷰
+  const byFolder = {};
+  BOOKS.forEach(b => {
+    if (!byFolder[b.folder]) byFolder[b.folder] = [];
+    byFolder[b.folder].push(b);
+  });
+
+  const folders = activeFilter === 'all'
+    ? FOLDER_ORDER.filter(f => byFolder[f])
+    : [activeFilter];
+
+  let html = '';
+  folders.forEach(folder => {
+    const books = byFolder[folder] || [];
+    if (!books.length) return;
+    const info = getFolderInfo(folder);
+    const [bg, fg] = getColors(info.cls);
+    let booksHtml = books.map((b, i) =>
+      `<div class="book-item">
+        <span class="book-num">${i+1}</span>
+        <span class="book-title">${escape(b.title)}</span>
+      </div>`
+    ).join('');
+    html += `<div class="category-section">
+      <div class="category-header">
+        <span class="cat-badge" style="background:${bg};color:${fg}">${info.emoji} ${info.label}</span>
+        <span class="cat-count">${books.length}권</span>
+      </div>
+      <div class="book-list">${booksHtml}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// 이벤트
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  render();
+});
+
+document.getElementById('filterTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  activeFilter = tab.dataset.cat;
+  document.getElementById('search').value = '';
+  searchQuery = '';
+  render();
+});
+
+// 초기 렌더
+render();
+</script>
+
+<!-- PIN 잠금 -->
+<div id="pinOverlay" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:var(--bg); display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:20px;
+">
+  <div style="font-size:2rem;">📚</div>
+  <div style="font-size:1.3rem; font-weight:700; color:var(--fg);">내 서재</div>
+  <div style="color:var(--muted); font-size:0.9rem;">PIN 번호를 입력하세요</div>
+  <div id="pinDots" style="display:flex; gap:12px; margin:8px 0;">
+    <div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div>
+  </div>
+  <div id="pinError" style="color:#e53935; font-size:0.85rem; min-height:1.2em;"></div>
+  <div style="display:grid; grid-template-columns:repeat(3,70px); gap:12px;">
+    <button class="pin-btn" onclick="pinInput('1')">1</button>
+    <button class="pin-btn" onclick="pinInput('2')">2</button>
+    <button class="pin-btn" onclick="pinInput('3')">3</button>
+    <button class="pin-btn" onclick="pinInput('4')">4</button>
+    <button class="pin-btn" onclick="pinInput('5')">5</button>
+    <button class="pin-btn" onclick="pinInput('6')">6</button>
+    <button class="pin-btn" onclick="pinInput('7')">7</button>
+    <button class="pin-btn" onclick="pinInput('8')">8</button>
+    <button class="pin-btn" onclick="pinInput('9')">9</button>
+    <button class="pin-btn" onclick="pinInput('←')" style="background:var(--border);">←</button>
+    <button class="pin-btn" onclick="pinInput('0')">0</button>
+    <button class="pin-btn" onclick="pinInput('←')" style="background:var(--border);">⌫</button>
+  </div>
+</div>
+<style>
+  .dot {
+    width:14px; height:14px; border-radius:50%;
+    background:var(--border); border:2px solid var(--muted);
+    transition:background .15s;
+  }
+  .dot.filled { background:var(--accent); border-color:var(--accent); }
+  .pin-btn {
+    width:70px; height:70px; border-radius:50%; border:none;
+    background:var(--surface); color:var(--fg);
+    font-size:1.4rem; font-weight:600; cursor:pointer;
+    box-shadow:var(--shadow); font-family:inherit;
+    transition:background .1s;
+  }
+  .pin-btn:active { background:var(--accent-bg); }
+</style>
+<script>
+(function() {
+  const CORRECT_PIN = '12210501';
+  const SESSION_KEY = 'library_unlocked';
+  let entered = '';
+
+  function checkUnlock() {
+    try {
+      if (sessionStorage.getItem(SESSION_KEY) === '1') return; // 이미 인증됨
+    } catch(e) {}
+    document.getElementById('pinOverlay').style.display = 'flex';
+    document.querySelector('.container') && (document.querySelector('.container').style.visibility = 'hidden');
+  }
+
+  function updateDots() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('filled', i < entered.length);
+    });
+  }
+
+  window.pinInput = function(val) {
+    if (val === '←') {
+      entered = entered.slice(0, -1);
+      document.getElementById('pinError').textContent = '';
+      updateDots();
+      return;
+    }
+    if (entered.length >= 8) return;
+    entered += val;
+    updateDots();
+    if (entered.length === 8) {
+      if (entered === CORRECT_PIN) {
+        try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
+        document.getElementById('pinOverlay').style.display = 'none';
+        document.querySelector('.container') && (document.querySelector('.container').style.visibility = '');
+      } else {
+        document.getElementById('pinError').textContent = '❌ 잘못된 PIN입니다';
+        entered = '';
+        updateDots();
+      }
+    }
+  };
+
+  // 키보드 지원
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('pinOverlay').style.display === 'none') return;
+    if (e.key >= '0' && e.key <= '9') pinInput(e.key);
+    else if (e.key === 'Backspace') pinInput('←');
+  });
+
+  checkUnlock();
+})();
+</script>
+</body>
+</html>
