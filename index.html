@@ -10,7 +10,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://aej100.github.io/my-library/"/>
 <meta property="og:title" content="내 서재 📚"/>
-<meta property="og:description" content="101권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
+<meta property="og:description" content="104권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
 <meta property="og:image" content="https://aej100.github.io/my-library/og-image.svg"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -19,7 +19,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="내 서재 📚"/>
-<meta name="twitter:description" content="101권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
+<meta name="twitter:description" content="104권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
 <meta name="twitter:image" content="https://aej100.github.io/my-library/og-image.svg"/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -284,7 +284,7 @@
 <div class="header">
   <div class="header-top">
     <h1>📚 내 서재</h1>
-    <span class="book-count" id="totalCount">91권</span>
+    <span class="book-count" id="totalCount">104권</span>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -415,7 +415,10 @@ const BOOKS = [
   {title:'찰리 멍거 바이블 완결판',folder:'투자_재테크'},
   {title:'투자 불패의 법칙',folder:'투자_재테크'},
   {title:'다가올 5년, 미래경제를 말한다',folder:'투자_재테크'},
-  {title:'피터케이의 이기는 투자 불변의 법칙',folder:'투자_재테크'}
+  {title:'피터케이의 이기는 투자 불변의 법칙',folder:'투자_재테크'},
+  {title:'반셀프 인테리어 교과서',folder:'인테리어_공간'},
+  {title:'한 달 만에 달성하는 100만 팔로워 마케팅',folder:'마케팅'},
+  {title:'2024 문화 소비 트렌드',folder:'마케팅'}
 ];
 
 const FOLDER_DISPLAY = {
@@ -483,7 +486,7 @@ function render() {
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">"${escape(q)}" 검색 결과가 없습니다</div></div>`;
     resultInfo.innerHTML = '';
-    document.getElementById('totalCount').textContent = `91권`;
+    document.getElementById('totalCount').textContent = `${BOOKS.length}권`;
     return;
   }
 
