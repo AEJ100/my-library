@@ -215,42 +215,90 @@
     font-size: 11px;
   }
 
-  /* 책 목록 */
-  .book-list {
+  /* 책 그리드 */
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 480px) { .book-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 640px) { .book-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (min-width: 800px) { .book-grid { grid-template-columns: repeat(6, 1fr); } }
+
+  .book-card {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 6px;
+    cursor: default;
+  }
+  .cover-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 6px;
     overflow: hidden;
-    transition: max-height 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.06);
+    background: var(--border);
+    flex-shrink: 0;
   }
-  .book-item {
+  .cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cover-img.loaded { opacity: 1; }
+  .cover-fallback {
+    position: absolute;
+    inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 11px 14px;
-    background: var(--surface);
-    border-radius: 8px;
-    gap: 10px;
-    transition: background 0.1s;
+    justify-content: center;
+    padding: 10px 8px;
+    text-align: center;
+    gap: 6px;
+    transition: opacity 0.3s;
   }
-  .book-item:hover, .book-item:active { background: var(--accent-bg); }
-  .book-item + .book-item { margin-top: 2px; }
-  .book-num {
+  .cover-img.loaded ~ .cover-fallback { opacity: 0; }
+  .cover-fallback-emoji { font-size: 18px; }
+  .cover-fallback-title {
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: keep-all;
+  }
+  .card-title {
     font-size: 11px;
-    color: var(--muted);
-    min-width: 20px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-  .book-title {
-    flex: 1;
-    font-size: 14px;
+    line-height: 1.4;
     font-weight: 500;
-    min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--fg);
+    word-break: keep-all;
   }
-  .book-folder {
-    font-size: 11px;
+  .card-folder-badge {
+    font-size: 10px;
     color: var(--muted);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 검색 결과: 표지 + 하이라이트 타이틀 */
+  .search-book-card .card-title mark {
+    background: #ffe57a; color: #1a1814; border-radius: 2px; padding: 0 1px;
+  }
+  :root[data-theme="dark"] .search-book-card .card-title mark {
+    background: #8b6914; color: #f0ede6;
   }
 
   /* 하이라이트 */
@@ -471,26 +519,109 @@ function getColors(cls) {
   return FOLDER_COLORS[cls] || FOLDER_COLORS["미분류"];
 }
 
+// ── 책 표지 로딩 ──────────────────────────────────────────
+const COVER_TTL = 30 * 24 * 3600 * 1000; // 30일
+
+function getCoverCache(title) {
+  try {
+    const raw = localStorage.getItem('gc_' + title);
+    if (!raw) return null;
+    const item = JSON.parse(raw);
+    if (Date.now() - item.ts > COVER_TTL) { localStorage.removeItem('gc_' + title); return null; }
+    return item.url; // null = "not found", string = URL
+  } catch { return null; }
+}
+
+function setCoverCache(title, url) {
+  try { localStorage.setItem('gc_' + title, JSON.stringify({url, ts: Date.now()})); } catch {}
+}
+
+async function fetchCoverUrl(title) {
+  const q = encodeURIComponent(title);
+  const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${q}&maxResults=3&fields=items/volumeInfo/imageLinks`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data.items) return null;
+    for (const item of data.items) {
+      const links = item.volumeInfo?.imageLinks;
+      if (links) {
+        const src = (links.medium || links.small || links.thumbnail || '').replace('http://', 'https://').replace('zoom=1', 'zoom=2');
+        if (src) return src;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+let coverObserver = null;
+
+function initCoverObserver() {
+  if (coverObserver) coverObserver.disconnect();
+  coverObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const wrap = entry.target;
+      coverObserver.unobserve(wrap);
+      const title = wrap.dataset.title;
+      const img = wrap.querySelector('.cover-img');
+      if (!img || img.dataset.loaded) return;
+      img.dataset.loaded = '1';
+
+      const cached = getCoverCache(title);
+      if (cached === null) {
+        // 캐시 없음 → API 호출
+        fetchCoverUrl(title).then(url => {
+          setCoverCache(title, url);
+          if (url) { img.src = url; img.onload = () => img.classList.add('loaded'); }
+        });
+      } else if (cached) {
+        img.src = cached;
+        img.onload = () => img.classList.add('loaded');
+      }
+      // cached === null (저장된 "없음") 이면 fallback 유지
+    });
+  }, { rootMargin: '300px' });
+
+  document.querySelectorAll('.cover-wrap[data-title]').forEach(el => coverObserver.observe(el));
+}
+
+function bookCardHtml(b, titleHtml, showFolder) {
+  const info = getFolderInfo(b.folder);
+  const [bg, fg] = getColors(info.cls);
+  const folderBadge = showFolder ? `<div class="card-folder-badge">${info.emoji} ${info.label}</div>` : '';
+  return `<div class="book-card${showFolder ? ' search-book-card' : ''}">
+    <div class="cover-wrap" data-title="${escape(b.title)}">
+      <img class="cover-img" alt="${escape(b.title)}">
+      <div class="cover-fallback" style="background:${bg}">
+        <span class="cover-fallback-emoji">${info.emoji}</span>
+        <span class="cover-fallback-title" style="color:${fg}">${escape(b.title)}</span>
+      </div>
+    </div>
+    <div class="card-title">${titleHtml}</div>
+    ${folderBadge}
+  </div>`;
+}
+
 function render() {
   const q = searchQuery.trim().toLowerCase();
   const container = document.getElementById('bookContainer');
   const resultInfo = document.getElementById('resultInfo');
 
-  // 필터링
   const filtered = BOOKS.filter(b => {
     const matchFolder = activeFilter === 'all' || b.folder === activeFilter;
     const matchSearch = !q || b.title.toLowerCase().includes(q);
     return matchFolder && matchSearch;
   });
 
+  document.getElementById('totalCount').textContent = `${BOOKS.length}권`;
+
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">"${escape(q)}" 검색 결과가 없습니다</div></div>`;
     resultInfo.innerHTML = '';
-    document.getElementById('totalCount').textContent = `${BOOKS.length}권`;
     return;
   }
-
-  document.getElementById('totalCount').textContent = `${BOOKS.length}권`;
 
   if (q) {
     resultInfo.innerHTML = `<strong>${filtered.length}권</strong> 검색됨`;
@@ -501,22 +632,15 @@ function render() {
     resultInfo.innerHTML = '';
   }
 
-  // 검색 모드: flat list
+  // 검색 모드: 표지 그리드 (카테고리 배지 포함)
   if (q) {
-    let html = '';
-    filtered.forEach((b, i) => {
-      const info = getFolderInfo(b.folder);
-      html += `<div class="book-item">
-        <span class="book-num">${i+1}</span>
-        <span class="book-title">${highlight(b.title, q)}</span>
-        <span class="book-folder">${info.emoji} ${info.label}</span>
-      </div>`;
-    });
-    container.innerHTML = html;
+    const cards = filtered.map(b => bookCardHtml(b, highlight(b.title, q), true)).join('');
+    container.innerHTML = `<div class="book-grid">${cards}</div>`;
+    initCoverObserver();
     return;
   }
 
-  // 카테고리 뷰
+  // 카테고리 뷰: 섹션별 그리드
   const byFolder = {};
   BOOKS.forEach(b => {
     if (!byFolder[b.folder]) byFolder[b.folder] = [];
@@ -533,21 +657,17 @@ function render() {
     if (!books.length) return;
     const info = getFolderInfo(folder);
     const [bg, fg] = getColors(info.cls);
-    let booksHtml = books.map((b, i) =>
-      `<div class="book-item">
-        <span class="book-num">${i+1}</span>
-        <span class="book-title">${escape(b.title)}</span>
-      </div>`
-    ).join('');
+    const cards = books.map(b => bookCardHtml(b, escape(b.title), false)).join('');
     html += `<div class="category-section">
       <div class="category-header">
         <span class="cat-badge" style="background:${bg};color:${fg}">${info.emoji} ${info.label}</span>
         <span class="cat-count">${books.length}권</span>
       </div>
-      <div class="book-list">${booksHtml}</div>
+      <div class="book-grid">${cards}</div>
     </div>`;
   });
   container.innerHTML = html;
+  initCoverObserver();
 }
 
 // 이벤트
