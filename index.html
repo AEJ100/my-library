@@ -10,7 +10,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://aej100.github.io/my-library/"/>
 <meta property="og:title" content="내 서재 📚"/>
-<meta property="og:description" content="104권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
+<meta property="og:description" content="132권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
 <meta property="og:image" content="https://aej100.github.io/my-library/og-image.svg"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -19,7 +19,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="내 서재 📚"/>
-<meta name="twitter:description" content="104권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
+<meta name="twitter:description" content="132권 보유 | 마케팅 · 브랜딩 · 투자 · 자기계발 · 심리학 · 카피라이팅 · 창업"/>
 <meta name="twitter:image" content="https://aej100.github.io/my-library/og-image.svg"/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -332,7 +332,7 @@
 <div class="header">
   <div class="header-top">
     <h1>📚 내 서재</h1>
-    <span class="book-count" id="totalCount">104권</span>
+    <span class="book-count" id="totalCount">132권</span>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -653,7 +653,35 @@ function render() {
 
   let html = '';
   folders.forEach(folder => {
-    const books = byFolder[folder] || [];
+    const books = byFolder[folder] || [  {title:'월급은 150만 원이지만 연봉은 블로그로 1억입니다',folder:'마케팅'},
+  {title:'지금 팔리는 것들의 비밀',folder:'마케팅'},
+  {title:'크러쉬 잇! SNS로 열정을 돈으로 바꿔라',folder:'마케팅'},
+  {title:'인스타그램 심리학',folder:'마케팅'},
+  {title:'1페이지 마케팅 플랜',folder:'마케팅'},
+  {title:'스토리의 과학',folder:'마케팅'},
+  {title:'스토너',folder:'미분류'},
+  {title:'교양을 위한 최소한의 경제지식',folder:'미분류'},
+  {title:'배민다움',folder:'미분류'},
+  {title:'데일 카네기 인간관계론',folder:'미분류'},
+  {title:'행복의 기원',folder:'심리_행동경제학'},
+  {title:'내면소통',folder:'심리_행동경제학'},
+  {title:'아주 작은 대화의 기술',folder:'영업_세일즈'},
+  {title:'기본부터 배우는 인테리어 교과서',folder:'인테리어_공간'},
+  {title:'처음 시작하는 인테리어',folder:'인테리어_공간'},
+  {title:'빛을알면 조명 인테리어가 쉬워진다',folder:'인테리어_공간'},
+  {title:'인테리어 디자인과 스타일링의 기본',folder:'인테리어_공간'},
+  {title:'마음이 편안해지는 - 주방 욕실 인테리어',folder:'인테리어_공간'},
+  {title:'최고의 인테리어는 정리입니다',folder:'인테리어_공간'},
+  {title:'나를 담은 집 나를 닮은 인테리어',folder:'인테리어_공간'},
+  {title:'따라만해도 성공 보장 20가지 인테리어 법칙',folder:'인테리어_공간'},
+  {title:'내추럴 빈티지 인테리어',folder:'인테리어_공간'},
+  {title:'빅터 프랭클의 죽음의 수용소에서',folder:'자기계발'},
+  {title:'나는 죽을 때까지 재미있게 살고 싶다',folder:'자기계발'},
+  {title:'찐 팬을 만드는 습관',folder:'창업_비즈니스'},
+  {title:'일론 머스크',folder:'창업_비즈니스'},
+  {title:'부의 곡선',folder:'투자_재테크'},
+  {title:'가치투자자의 탄생',folder:'투자_재테크'},
+];
     if (!books.length) return;
     const info = getFolderInfo(folder);
     const [bg, fg] = getColors(info.cls);
