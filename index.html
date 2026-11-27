@@ -485,7 +485,7 @@ window.LOCAL_COVERS = {
 <div class="header">
   <div class="header-top">
     <h1>📚 내 서재</h1>
-    <span class="book-count" id="totalCount">135권</span>
+    <span class="book-count" id="totalCount">136권</span>
     <button onclick="clearCoverCache()" title="표지 캐시 초기화" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;color:var(--muted);border-radius:6px;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔄</button>
   </div>
   <div class="search-wrap">
@@ -938,6 +938,7 @@ function render() {
   folders.forEach(folder => {
     const books = byFolder[folder] || [  {title:'EBS 다큐프라임 자본주의',folder:'미분류'},
   {title:'트렌드 코리아 2027',folder:'미분류'},
+  {title:'창업가의 습관',folder:'미분류'},
 ];
     if (!books.length) return;
     const info = getFolderInfo(folder);
